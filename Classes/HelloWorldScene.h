@@ -25,10 +25,15 @@
 #ifndef __HELLOWORLD_SCENE_H__
 #define __HELLOWORLD_SCENE_H__
 
+#define kNumClouds			12
+
 
 #include "cocos2d.h"
 USING_NS_CC;
-
+enum
+{
+	kCloudsStartTag = 100,
+};
 class HelloWorld : public cocos2d::Scene
 {
 public:
@@ -41,6 +46,14 @@ public:
     
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
+	Sprite* background;
+    void step(float dt);
+    void initCloud();
+    void resetCloud();
+    void resetClouds();
+	void initClouds();
+	int currentCloudTag;
+	SpriteFrameCache* cache;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

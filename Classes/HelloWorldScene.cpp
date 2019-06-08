@@ -81,7 +81,21 @@ bool HelloWorld::init()
     /////////////////////////////
     // 3. add your codes below...
 
+	// Add SpriteSheet with file
+	cache = SpriteFrameCache::getInstance();
+	cache->addSpriteFramesWithFile("spritesheet.plist");
+	auto backgroundFrame = cache->getSpriteFrameByName("background.png");
 
+	// Get background from sprite sheet
+	background = Sprite::createWithSpriteFrame(backgroundFrame);
+	this->addChild(background);
+	background->setPosition(visibleSize / 2);
+
+	// Initialize the clouds
+	initClouds();
+
+	// Start stepping
+	schedule(schedule_selector(HelloWorld::step));
 	return true;
 }
 
@@ -97,4 +111,106 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
     //_eventDispatcher->dispatchEvent(&customEndEvent);
 
 
+}
+
+void HelloWorld::step(float dt)
+{
+	int t = kCloudsStartTag;
+	for (t; t < kCloudsStartTag + kNumClouds; t++)
+	{
+		auto cloud = static_cast<Sprite*>(getChildByTag(t));
+		auto pos = cloud->getPosition();
+		auto size = cloud->getContentSize();
+
+		// Control speed of clouds moving based on their size
+		pos.x += 0.1f * cloud->getScaleY();
+
+		if (pos.x > Director::getInstance()->getWinSize().width + size.width / 2)
+		{
+			pos.x = -size.width / 2;;
+		}
+		cloud->setPosition(pos);
+	}
+}
+
+void HelloWorld::initCloud()
+{
+	Sprite *cloud;
+	switch (rand() % 3)
+	{
+	case 0:
+		// Get cloud from sprite sheet
+		cloud = Sprite::createWithSpriteFrame(cache->getSpriteFrameByName("cloud1.png"));
+		break;
+	case 1:
+		// Get cloud from sprite sheet
+		cloud = Sprite::createWithSpriteFrame(cache->getSpriteFrameByName("cloud2.png"));
+		break;
+	case 2:
+		// Get cloud from sprite sheet
+		cloud = Sprite::createWithSpriteFrame(cache->getSpriteFrameByName("cloud3.png"));
+		break;
+	}
+
+	this->addChild(cloud, 3, currentCloudTag);
+	cloud->setOpacity(128);
+}
+
+void HelloWorld::resetCloud()
+{
+	auto *cloud = static_cast<Sprite*>(getChildByTag(currentCloudTag));
+
+	// Calculate a random distance for this cloud
+	float distance = rand() % 20 + 5;
+
+	// Scale the cloud based on the distance
+	float scale = 5.0f / distance;
+
+	// Scale the X and Y equally for the cloud
+	cloud->setScaleX(scale);
+	cloud->setScaleY(scale);
+
+	// randomly invert the X scale for some of the clouds
+	if (rand() % 2 == 1) cloud->setScaleX(-cloud->getScaleX());
+
+	auto size = cloud->getContentSize();
+
+	float scaled_width = size.width * scale;
+
+	// Randomly place each cloud within our view 
+	float x = rand() % static_cast<int>(Director::getInstance()->getWinSize().width + static_cast<int>(scaled_width)) - scaled_width / 2;
+	float y = rand() % static_cast<int>(Director::getInstance()->getWinSize().height - static_cast<int>(scaled_width)) + scaled_width / 2 + Director::getInstance()->getWinSize().height;
+
+	cloud->setPosition(Vec2(x, y));
+}
+
+void HelloWorld::resetClouds()
+{
+	currentCloudTag = kCloudsStartTag;
+
+	while (currentCloudTag < kCloudsStartTag + kNumClouds)
+	{
+		resetCloud();
+
+		auto cloud = static_cast<Sprite*>(getChildByTag(currentCloudTag));
+		auto pos = cloud->getPosition();
+		pos.y -= static_cast<float>(Director::getInstance()->getWinSize().height);
+		cloud->setPosition(pos);
+		currentCloudTag++;
+	}
+}
+
+void HelloWorld::initClouds()
+{
+	currentCloudTag = kCloudsStartTag;
+
+	// Create the clouds and add them to the layer
+	while (currentCloudTag < kCloudsStartTag + kNumClouds)
+	{
+		initCloud();
+		currentCloudTag++;
+	}
+
+	// randomly size and place each cloud
+	resetClouds();
 }
