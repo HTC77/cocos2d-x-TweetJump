@@ -24,10 +24,14 @@
 
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
+#include "GameScene.h"
 
 Scene* HelloWorld::createScene()
 {
-    return HelloWorld::create();
+	auto layer = GameScene::create();
+	auto scene = Scene::create();
+	scene->addChild(layer);
+    return scene;
 }
 
 // Print useful error message instead of segfaulting when files are not there.
@@ -96,6 +100,8 @@ bool HelloWorld::init()
 
 	// Start stepping
 	schedule(schedule_selector(HelloWorld::step));
+
+
 	return true;
 }
 

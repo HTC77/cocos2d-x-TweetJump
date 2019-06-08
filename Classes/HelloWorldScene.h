@@ -26,6 +26,14 @@
 #define __HELLOWORLD_SCENE_H__
 
 #define kNumClouds			12
+#define kNumPlatforms		10		// Number of platforms
+ // Fist platform is 30 pixels from the bottom of the screen
+#define kStartingCurrentPlatformY	30
+#define kMinPlatformStep	50
+#define kMaxPlatformStep	300		// This is the top of the screen (SHOULD BE RESOLUTION INDEPENDANT)
+#define kMaxBonusStep		40
+#define kMinBonusStep		20
+#define kPlatformTopPadding 10
 
 
 #include "cocos2d.h"
@@ -33,6 +41,18 @@ USING_NS_CC;
 enum
 {
 	kCloudsStartTag = 100,
+	kBird,
+	kPlatformsStartTag = 200,
+	kBonusStartTag = 300,
+	kScoreLabel,
+};
+enum
+{
+	kBonus5 = 0,
+	kBonus10,
+	kBonus50,
+	kBonus100,
+	kNumBonuses
 };
 class HelloWorld : public cocos2d::Scene
 {
